@@ -35,6 +35,7 @@ const state = {
     searchResults: [],
     theme: localStorage.getItem('theme') || 'light',
     isSidebarOpen: false,
+    isSidebarPinned: localStorage.getItem('sidebarPinned') === 'true',
     navView: 'books', // 'books', 'chapters', 'verses'
     navSelectedBook: null,
     navSelectedChapter: null
@@ -54,6 +55,8 @@ const elements = {
     sidebar: document.getElementById('sidebar'),
     sidebarOverlay: document.getElementById('sidebar-overlay'),
     closeSidebar: document.getElementById('close-sidebar'),
+    pinSidebar: document.getElementById('pin-sidebar'),
+    mainContent: document.getElementById('main-content'),
     globalSearch: document.getElementById('global-search'),
     searchMobileTrigger: document.getElementById('search-mobile-trigger'),
     searchModal: document.getElementById('search-modal'),
@@ -67,6 +70,7 @@ const elements = {
 async function init() {
     setupTheme();
     setupEventListeners();
+    setupPinState();
     await fetchBibleData();
     renderBooks();
 
@@ -113,7 +117,7 @@ function renderBooks() {
     } else if (state.navView === 'chapters') {
         const book = state.bibleData.find(b => b.abbrev === state.navSelectedBook);
         if (!book) return;
-        
+
         const bookName = getBookName(book);
         let html = `
             <div class="px-2 pb-4 border-b border-gray-100 dark:border-gray-900 mb-4">
@@ -126,26 +130,27 @@ function renderBooks() {
             </div>
             <div class="grid grid-cols-5 gap-2 px-2">
         `;
-        
+
         book.chapters.forEach((_, index) => {
+            const isActive = (state.currentBook === state.navSelectedBook && state.currentChapter === (index + 1)) ? 'active' : '';
             html += `
-                <button class="nav-grid-item aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all hover:bg-gemini-accent hover:text-white dark:hover:bg-gemini-accent dark:hover:text-white"
+                <button class="nav-grid-item ${isActive} aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all hover:bg-gemini-accent hover:text-white dark:hover:bg-gemini-accent dark:hover:text-white"
                         onclick="navSelectChapter(${index + 1})">
                     ${index + 1}
                 </button>
             `;
         });
-        
+
         html += `</div>`;
         elements.booksList.innerHTML = html;
-        
+
     } else if (state.navView === 'verses') {
         const book = state.bibleData.find(b => b.abbrev === state.navSelectedBook);
         if (!book) return;
-        
+
         const chapter = book.chapters[state.navSelectedChapter - 1];
         if (!chapter) return;
-        
+
         const bookName = getBookName(book);
         let html = `
             <div class="px-2 pb-4 border-b border-gray-100 dark:border-gray-900 mb-4">
@@ -158,7 +163,7 @@ function renderBooks() {
             </div>
             <div class="grid grid-cols-5 gap-2 px-2">
         `;
-        
+
         chapter.forEach((_, index) => {
             html += `
                 <button class="nav-grid-item aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all hover:bg-gemini-accent hover:text-white dark:hover:bg-gemini-accent dark:hover:text-white"
@@ -167,10 +172,18 @@ function renderBooks() {
                 </button>
             `;
         });
-        
+
         html += `</div>`;
         elements.booksList.innerHTML = html;
     }
+
+    // Scroll active element into view
+    setTimeout(() => {
+        const activeEl = elements.booksList.querySelector('.active');
+        if (activeEl) {
+            activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 50);
 }
 
 function navSelectBook(abbrev) {
@@ -204,11 +217,17 @@ function navigateTo(abbrev, chapterNum, verseNum = null) {
 
     state.currentBook = abbrev;
     state.currentChapter = chapterNum;
-    
-    // Reset sidebar view logically (so it opens to books next time)
-    state.navView = 'books';
-    state.navSelectedBook = null;
-    state.navSelectedChapter = null;
+
+    if (state.isSidebarPinned) {
+        state.navView = verseNum ? 'verses' : 'chapters';
+        state.navSelectedBook = abbrev;
+        state.navSelectedChapter = chapterNum;
+    } else {
+        // Reset sidebar view logically (so it opens to books next time)
+        state.navView = 'books';
+        state.navSelectedBook = null;
+        state.navSelectedChapter = null;
+    }
 
     // Save to local storage
     localStorage.setItem('lastBook', abbrev);
@@ -230,7 +249,7 @@ function navigateTo(abbrev, chapterNum, verseNum = null) {
                 const yOffset = -80; // Account for fixed header
                 const y = verseEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
                 window.scrollTo({ top: y, behavior: 'smooth' });
-                
+
                 // Add highlight effect
                 verseEl.classList.add('verse-highlight');
                 setTimeout(() => {
@@ -389,17 +408,56 @@ function updateThemeIcon() {
         : '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
 }
 
+function setupPinState() {
+    if (state.isSidebarPinned && window.innerWidth >= 768) {
+        elements.pinSidebar.classList.add('pinned');
+        elements.sidebar.classList.remove('-translate-x-full');
+        elements.mainContent.classList.add('md:ml-72');
+        state.isSidebarOpen = true;
+    }
+}
+
+function togglePinSidebar() {
+    state.isSidebarPinned = !state.isSidebarPinned;
+    localStorage.setItem('sidebarPinned', state.isSidebarPinned);
+
+    if (state.isSidebarPinned) {
+        elements.pinSidebar.classList.add('pinned');
+        elements.mainContent.classList.add('md:ml-72');
+        elements.sidebarOverlay.classList.add('hidden');
+        if (!state.isSidebarOpen) {
+            state.isSidebarOpen = true;
+            elements.sidebar.classList.remove('-translate-x-full');
+        }
+    } else {
+        elements.pinSidebar.classList.remove('pinned');
+        elements.mainContent.classList.remove('md:ml-72');
+        if (state.isSidebarOpen) {
+            elements.sidebarOverlay.classList.remove('hidden');
+        }
+    }
+}
+
 function toggleSidebar() {
+    if (state.isSidebarPinned && window.innerWidth >= 768) {
+        togglePinSidebar();
+        return;
+    }
+
     state.isSidebarOpen = !state.isSidebarOpen;
     if (state.isSidebarOpen) {
         elements.sidebar.classList.remove('-translate-x-full');
-        elements.sidebarOverlay.classList.remove('hidden');
+        if (!state.isSidebarPinned || window.innerWidth < 768) {
+            elements.sidebarOverlay.classList.remove('hidden');
+        }
     } else {
         closeSidebar();
     }
 }
 
 function closeSidebar() {
+    if (state.isSidebarPinned && window.innerWidth >= 768) return;
+
     state.isSidebarOpen = false;
     elements.sidebar.classList.add('-translate-x-full');
     elements.sidebarOverlay.classList.add('hidden');
@@ -421,6 +479,9 @@ function setupEventListeners() {
     elements.menuToggle.addEventListener('click', toggleSidebar);
     elements.sidebarOverlay.addEventListener('click', closeSidebar);
     elements.closeSidebar.addEventListener('click', closeSidebar);
+    if (elements.pinSidebar) {
+        elements.pinSidebar.addEventListener('click', togglePinSidebar);
+    }
 
     // Search related
     elements.globalSearch.addEventListener('keypress', (e) => {

@@ -86,6 +86,17 @@ html {
     font-weight: 500;
 }
 
+/* Sidebar Pin Icon */
+.sidebar-pin-icon {
+    transition: transform 0.2s ease, fill 0.2s ease, color 0.2s ease;
+}
+
+#pin-sidebar.pinned .sidebar-pin-icon {
+    fill: currentColor;
+    color: var(--accent);
+    transform: rotate(45deg);
+}
+
 /* Gemini Glow Effect */
 .gemini-glow {
     position: relative;
@@ -138,6 +149,13 @@ html {
     background: var(--accent);
     color: white;
     box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.nav-grid-item.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 12px var(--accent-glow);
+    font-weight: bold;
 }
 
 /* Verse Highlight Animation */
