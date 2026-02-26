@@ -75,12 +75,61 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <div class="relative hidden sm:block">
+                <select id="language-select"
+                    class="appearance-none bg-gray-100 dark:bg-gray-800 border-none rounded-full py-2 pl-4 pr-8 text-sm focus:ring-2 focus:ring-gemini-accent outline-none cursor-pointer transition-colors text-gray-700 dark:text-gray-300 font-medium">
+                    <option value="es">Español (RVR)</option>
+                    <option value="en">English (KJV)</option>
+                    <option value="pt">Português (NVI)</option>
+                    <option value="fr">Français (APEE)</option>
+                    <option value="de">Deutsch (Schlachter)</option>
+                    <option value="ru">Русский (Synodal)</option>
+                    <option value="ko">한국어 (Korean)</option>
+                    <option value="zh">中文 (CUV)</option>
+                    <option value="el">Ελληνικά (Greek)</option>
+                    <option value="fi">Suomi (Finnish)</option>
+                    <option value="ro">Română (Cornilescu)</option>
+                    <option value="ar">العربية (SVD)</option>
+                    <option value="vi">Tiếng Việt (Vietnamese)</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
             <button id="theme-toggle"
-                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors hidden sm:block">
                 <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round"></svg>
             </button>
+            <div class="sm:hidden flex items-center gap-1">
+                <select id="language-select-mobile"
+                    class="appearance-none bg-transparent border-none text-sm outline-none font-medium mr-1 p-1">
+                    <option value="es">ES</option>
+                    <option value="en">EN</option>
+                    <option value="pt">PT</option>
+                    <option value="fr">FR</option>
+                    <option value="de">DE</option>
+                    <option value="ru">RU</option>
+                    <option value="ko">KO</option>
+                    <option value="zh">ZH</option>
+                    <option value="el">EL</option>
+                    <option value="fi">FI</option>
+                    <option value="ro">RO</option>
+                    <option value="ar">AR</option>
+                    <option value="vi">VI</option>
+                </select>
+                <button id="theme-toggle-mobile"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                    <svg id="theme-icon-mobile" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round"></svg>
+                </button>
+            </div>
         </div>
     </header>
 

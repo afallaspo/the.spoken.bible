@@ -6,30 +6,239 @@
 const BIBLE_API_BASE = 'https://raw.githubusercontent.com/thiagobodruk/bible/master/json/es_rvr.json';
 
 const BOOK_NAMES = {
-    "gn": "Génesis", "ex": "Éxodo", "lv": "Levítico", "nm": "Números", "dt": "Deuteronomio",
-    "js": "Josué", "jud": "Jueces", "rt": "Rut", "1sm": "1 Samuel", "2sm": "2 Samuel",
-    "1kgs": "1 Reyes", "2kgs": "2 Reyes", "1ch": "1 Crónicas", "2ch": "2 Crónicas",
-    "ezr": "Esdras", "ne": "Nehemías", "et": "Ester", "job": "Job", "ps": "Salmos",
-    "prv": "Proverbios", "ec": "Eclesiastés", "so": "Cantares", "is": "Isaías",
-    "jr": "Jeremías", "lm": "Lamentaciones", "ez": "Ezequiel", "dn": "Daniel",
-    "ho": "Oseas", "jl": "Joel", "am": "Amós", "ob": "Abdías", "jn": "Jonás",
-    "mi": "Miqueas", "na": "Nahúm", "hk": "Habacuc", "zp": "Sofonías", "hg": "Hageo",
-    "zc": "Zacarías", "ml": "Malaquías", "mt": "Mateo", "mk": "Marcos", "lk": "Lucas",
-    "jo": "Juan", "act": "Hechos", "rm": "Romanos", "1co": "1 Corintios", "2co": "2 Corintios",
-    "gl": "Gálatas", "eph": "Efesios", "ph": "Filipenses", "cl": "Colosenses",
-    "1ts": "1 Tesalonicenses", "2ts": "2 Tesalonicenses", "1tm": "1 Timoteo",
-    "2tm": "2 Timoteo", "tt": "Tito", "phm": "Filemón", "hb": "Hebreos", "jm": "Santiago",
-    "1pe": "1 Pedro", "2pe": "2 Pedro", "1jo": "1 Juan", "2jo": "2 Juan", "3jo": "3 Juan",
-    "jd": "Judas", "re": "Apocalipsis"
+    es: {
+        "gn": "Génesis", "ex": "Éxodo", "lv": "Levítico", "nm": "Números", "dt": "Deuteronomio",
+        "js": "Josué", "jud": "Jueces", "rt": "Rut", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Reyes", "2kgs": "2 Reyes", "1ch": "1 Crónicas", "2ch": "2 Crónicas",
+        "ezr": "Esdras", "ne": "Nehemías", "et": "Ester", "job": "Job", "ps": "Salmos",
+        "prv": "Proverbios", "ec": "Eclesiastés", "so": "Cantares", "is": "Isaías",
+        "jr": "Jeremías", "lm": "Lamentaciones", "ez": "Ezequiel", "dn": "Daniel",
+        "ho": "Oseas", "jl": "Joel", "am": "Amós", "ob": "Abdías", "jn": "Jonás",
+        "mi": "Miqueas", "na": "Nahúm", "hk": "Habacuc", "zp": "Sofonías", "hg": "Hageo",
+        "zc": "Zacarías", "ml": "Malaquías", "mt": "Mateo", "mk": "Marcos", "lk": "Lucas",
+        "jo": "Juan", "act": "Hechos", "rm": "Romanos", "1co": "1 Corintios", "2co": "2 Corintios",
+        "gl": "Gálatas", "eph": "Efesios", "ph": "Filipenses", "cl": "Colosenses",
+        "1ts": "1 Tesalonicenses", "2ts": "2 Tesalonicenses", "1tm": "1 Timoteo",
+        "2tm": "2 Timoteo", "tt": "Tito", "phm": "Filemón", "hb": "Hebreos", "jm": "Santiago",
+        "1pe": "1 Pedro", "2pe": "2 Pedro", "1jo": "1 Juan", "2jo": "2 Juan", "3jo": "3 Juan",
+        "jd": "Judas", "re": "Apocalipsis"
+    },
+    en: {
+        "gn": "Genesis", "ex": "Exodus", "lv": "Leviticus", "nm": "Numbers", "dt": "Deuteronomy",
+        "js": "Joshua", "jud": "Judges", "rt": "Ruth", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Kings", "2kgs": "2 Kings", "1ch": "1 Chronicles", "2ch": "2 Chronicles",
+        "ezr": "Ezra", "ne": "Nehemiah", "et": "Esther", "job": "Job", "ps": "Psalms",
+        "prv": "Proverbs", "ec": "Ecclesiastes", "so": "Song of Solomon", "is": "Isaiah",
+        "jr": "Jeremiah", "lm": "Lamentations", "ez": "Ezekiel", "dn": "Daniel",
+        "ho": "Hosea", "jl": "Joel", "am": "Amos", "ob": "Obadiah", "jn": "Jonah",
+        "mi": "Micah", "na": "Nahum", "hk": "Habakkuk", "zp": "Zephaniah", "hg": "Haggai",
+        "zc": "Zechariah", "ml": "Malachi", "mt": "Matthew", "mk": "Mark", "lk": "Luke",
+        "jo": "John", "act": "Acts", "rm": "Romans", "1co": "1 Corinthians", "2co": "2 Corinthians",
+        "gl": "Galatians", "eph": "Ephesians", "ph": "Philippians", "cl": "Colossians",
+        "1ts": "1 Thessalonians", "2ts": "2 Thessalonians", "1tm": "1 Timothy",
+        "2tm": "2 Timothy", "tt": "Titus", "phm": "Philemon", "hb": "Hebrews", "jm": "James",
+        "1pe": "1 Peter", "2pe": "2 Peter", "1jo": "1 John", "2jo": "2 John", "3jo": "3 John",
+        "jd": "Jude", "re": "Revelation"
+    },
+    pt: {
+        "gn": "Gênesis", "ex": "Êxodo", "lv": "Levítico", "nm": "Números", "dt": "Deuteronômio",
+        "js": "Josué", "jud": "Juízes", "rt": "Rute", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Reis", "2kgs": "2 Reis", "1ch": "1 Crônicas", "2ch": "2 Crônicas",
+        "ezr": "Esdras", "ne": "Neemias", "et": "Ester", "job": "Jó", "ps": "Salmos",
+        "prv": "Provérbios", "ec": "Eclesiastes", "so": "Cânticos", "is": "Isaías",
+        "jr": "Jeremias", "lm": "Lamentações", "ez": "Ezequiel", "dn": "Daniel",
+        "ho": "Oseias", "jl": "Joel", "am": "Amós", "ob": "Obadias", "jn": "Jonas",
+        "mi": "Miqueias", "na": "Naum", "hk": "Habacuque", "zp": "Sofonias", "hg": "Ageu",
+        "zc": "Zacarias", "ml": "Malaquias", "mt": "Mateus", "mk": "Marcos", "lk": "Lucas",
+        "jo": "João", "act": "Atos", "rm": "Romanos", "1co": "1 Coríntios", "2co": "2 Coríntios",
+        "gl": "Gálatas", "eph": "Efésios", "ph": "Filipenses", "cl": "Colossenses",
+        "1ts": "1 Tessalonicenses", "2ts": "2 Tessalonicenses", "1tm": "1 Timóteo",
+        "2tm": "2 Timóteo", "tt": "Tito", "phm": "Filemom", "hb": "Hebreus", "jm": "Tiago",
+        "1pe": "1 Pedro", "2pe": "2 Pedro", "1jo": "1 João", "2jo": "2 João", "3jo": "3 João",
+        "jd": "Judas", "re": "Apocalipse"
+    },
+    fr: {
+        "gn": "Genèse", "ex": "Exode", "lv": "Lévitique", "nm": "Nombres", "dt": "Deutéronome",
+        "js": "Josué", "jud": "Juges", "rt": "Ruth", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Rois", "2kgs": "2 Rois", "1ch": "1 Chroniques", "2ch": "2 Chroniques",
+        "ezr": "Esdras", "ne": "Néhémie", "et": "Esther", "job": "Job", "ps": "Psaumes",
+        "prv": "Proverbes", "ec": "Ecclésiaste", "so": "Cantique", "is": "Ésaïe",
+        "jr": "Jérémie", "lm": "Lamentations", "ez": "Ézéchiel", "dn": "Daniel",
+        "ho": "Osée", "jl": "Joël", "am": "Amos", "ob": "Abdias", "jn": "Jonas",
+        "mi": "Michée", "na": "Nahum", "hk": "Habacuc", "zp": "Sophonie", "hg": "Aggée",
+        "zc": "Zacharie", "ml": "Malachie", "mt": "Matthieu", "mk": "Marc", "lk": "Luc",
+        "jo": "Jean", "act": "Actes", "rm": "Romains", "1co": "1 Corinthiens", "2co": "2 Corinthiens",
+        "gl": "Galates", "eph": "Éphésiens", "ph": "Philippiens", "cl": "Colossiens",
+        "1ts": "1 Thessaloniciens", "2ts": "2 Thessaloniciens", "1tm": "1 Timothée",
+        "2tm": "2 Timothée", "tt": "Tite", "phm": "Philémon", "hb": "Hébreux", "jm": "Jacques",
+        "1pe": "1 Pierre", "2pe": "2 Pierre", "1jo": "1 Jean", "2jo": "2 Jean", "3jo": "3 Jean",
+        "jd": "Jude", "re": "Apocalypse"
+    },
+    "de": {
+        "gn": "1 Mose", "ex": "2 Mose", "lv": "3 Mose", "nm": "4 Mose", "dt": "5 Mose",
+        "js": "Josua", "jud": "Richter", "rt": "Rut", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Könige", "2kgs": "2 Könige", "1ch": "1 Chronik", "2ch": "2 Chronik",
+        "ezr": "Esra", "ne": "Nehemia", "et": "Ester", "job": "Hiob", "ps": "Psalmen",
+        "prv": "Sprüche", "ec": "Prediger", "so": "Hoheslied", "is": "Jesaja",
+        "jr": "Jeremia", "lm": "Klagelieder", "ez": "Hesekiel", "dn": "Daniel",
+        "ho": "Hosea", "jl": "Joel", "am": "Amos", "ob": "Obadja", "jn": "Jona",
+        "mi": "Micha", "na": "Nahum", "hk": "Habakuk", "zp": "Zefanja", "hg": "Haggai",
+        "zc": "Sacharja", "ml": "Maleachi", "mt": "Matthäus", "mk": "Markus", "lk": "Lukas",
+        "jo": "Johannes", "act": "Apostelgeschichte", "rm": "Römer", "1co": "1 Korinther", "2co": "2 Korinther",
+        "gl": "Galater", "eph": "Epheser", "ph": "Philipper", "cl": "Kolosser",
+        "1ts": "1 Thessalonicher", "2ts": "2 Thessalonicher", "1tm": "1 Timotheus",
+        "2tm": "2 Timotheus", "tt": "Titus", "phm": "Philemon", "hb": "Hebräer", "jm": "Jakobus",
+        "1pe": "1 Petrus", "2pe": "2 Petrus", "1jo": "1 Johannes", "2jo": "2 Johannes", "3jo": "3 Johannes",
+        "jd": "Judas", "re": "Offenbarung"
+    },
+    ru: {
+        "gn": "Бытие", "ex": "Исход", "lv": "Левит", "nm": "Числа", "dt": "Второзаконие",
+        "js": "Иисус Навин", "jud": "Судьи", "rt": "Руфь", "1sm": "1 Царств", "2sm": "2 Царств",
+        "1kgs": "3 Царств", "2kgs": "4 Царств", "1ch": "1 Паралипоменон", "2ch": "2 Паралипоменон",
+        "ezr": "Ездра", "ne": "Неемия", "et": "Есфирь", "job": "Иов", "ps": "Псалтирь",
+        "prv": "Притчи", "ec": "Екклесиаст", "so": "Песня Песней", "is": "Исаия",
+        "jr": "Иеремия", "lm": "Плач Иеремии", "ez": "Иезекииль", "dn": "Даниил",
+        "ho": "Осия", "jl": "Иоиль", "am": "Амос", "ob": "Авдий", "jn": "Иона",
+        "mi": "Михей", "na": "Наум", "hk": "Аввакум", "zp": "Софония", "hg": "Аггей",
+        "zc": "Захария", "ml": "Малахия", "mt": "От Матфея", "mk": "От Марка", "lk": "От Луки",
+        "jo": "От Иоанна", "act": "Деяния", "rm": "К Римлянам", "1co": "1 Коринфянам", "2co": "2 Коринфянам",
+        "gl": "К Галатам", "eph": "К Ефесянам", "ph": "К Филиппийцам", "cl": "К Колоссянам",
+        "1ts": "1 Фессалоникийцам", "2ts": "2 Фессалоникийцам", "1tm": "1 Тимофею",
+        "2tm": "2 Тимофею", "tt": "К Титу", "phm": "К Филимону", "hb": "К Евреям", "jm": "Иакова",
+        "1pe": "1 Петра", "2pe": "2 Петра", "1jo": "1 Иоанна", "2jo": "2 Иоанна", "3jo": "3 Иоанна",
+        "jd": "Иуды", "re": "Откровение"
+    },
+    ko: {
+        "gn": "창세기", "ex": "출애굽기", "lv": "레위기", "nm": "민수기", "dt": "신명기",
+        "js": "여호수아", "jud": "사사기", "rt": "룻기", "1sm": "사무엘상", "2sm": "사무엘하",
+        "1kgs": "열왕기상", "2kgs": "열왕기하", "1ch": "역대상", "2ch": "역대하",
+        "ezr": "에스라", "ne": "느헤미야", "et": "에스더", "job": "욥기", "ps": "시편",
+        "prv": "잠언", "ec": "전도서", "so": "아가", "is": "이사야",
+        "jr": "예레미야", "lm": "애가", "ez": "에스겔", "dn": "다니엘",
+        "ho": "호세아", "jl": "요엘", "am": "아모스", "ob": "오바댜", "jn": "요나",
+        "mi": "미가", "na": "나훔", "hk": "하박국", "zp": "스바냐", "hg": "학개",
+        "zc": "스가랴", "ml": "말라기", "mt": "마태복음", "mk": "마가복음", "lk": "누가복음",
+        "jo": "요한복음", "act": "사도행전", "rm": "로마서", "1co": "고린도전서", "2co": "고린도후서",
+        "gl": "갈라디아서", "eph": "에베소서", "ph": "빌립보서", "cl": "골로새서",
+        "1ts": "데살로니가전서", "2ts": "데살로니가후서", "1tm": "디모데전서",
+        "2tm": "디모데후서", "tt": "디도서", "phm": "빌레몬서", "hb": "히브리서", "jm": "야고보서",
+        "1pe": "베드로전서", "2pe": "베드로후서", "1jo": "요한1서", "2jo": "요한2서", "3jo": "요한3서",
+        "jd": "유다서", "re": "요한계시록"
+    },
+    zh: {
+        "gn": "创世记", "ex": "出埃及记", "lv": "利未记", "nm": "民数记", "dt": "申命记",
+        "js": "约书亚记", "jud": "士师记", "rt": "路得记", "1sm": "撒母耳记上", "2sm": "撒母耳记下",
+        "1kgs": "列王纪上", "2kgs": "列王纪下", "1ch": "历代志上", "2ch": "历代志下",
+        "ezr": "以斯拉记", "ne": "尼希米记", "et": "以斯帖记", "job": "约伯记", "ps": "诗篇",
+        "prv": "箴言", "ec": "传道书", "so": "雅歌", "is": "以赛亚书",
+        "jr": "耶利米书", "lm": "耶利米哀歌", "ez": "以西结书", "dn": "但以理书",
+        "ho": "何西阿书", "jl": "约珥书", "am": "阿摩司书", "ob": "俄巴底亚书", "jn": "约拿书",
+        "mi": "弥迦书", "na": "那鸿书", "hk": "哈巴谷书", "zp": "西番雅书", "hg": "哈该书",
+        "zc": "撒迦利亚书", "ml": "玛拉基书", "mt": "马太福音", "mk": "马可福音", "lk": "路加福音",
+        "jo": "约翰福音", "act": "使徒行传", "rm": "罗马书", "1co": "哥林多前书", "2co": "哥林多后书",
+        "gl": "加拉太书", "eph": "以弗所书", "ph": "腓立比书", "cl": "歌罗西书",
+        "1ts": "帖撒罗尼迦前书", "2ts": "帖撒罗尼迦后书", "1tm": "提摩太前书",
+        "2tm": "提摩太后书", "tt": "提多书", "phm": "腓利门书", "hb": "希伯来书", "jm": "雅各书",
+        "1pe": "彼得前书", "2pe": "彼得后书", "1jo": "约翰一书", "2jo": "约翰二书", "3jo": "约翰三书",
+        "jd": "犹大书", "re": "启示录"
+    },
+    el: {
+        "gn": "Γένεσις", "ex": "Έξοδος", "lv": "Λευιτικόν", "nm": "Αριθμοί", "dt": "Δευτερονόμιον",
+        "js": "Ιησούς του Ναυή", "jud": "Κριταί", "rt": "Ρουθ", "1sm": "Α' Σαμουήλ", "2sm": "Β' Σαμουήλ",
+        "1kgs": "Α' Βασιλέων", "2kgs": "Β' Βασιλέων", "1ch": "Α' Χρονικών", "2ch": "Β' Χρονικών",
+        "ezr": "Έσδρας", "ne": "Νεεμίας", "et": "Εσθήρ", "job": "Ιώβ", "ps": "Ψαλμοί",
+        "prv": "Παροιμίαι", "ec": "Εκκλησιαστής", "so": "Άσμα Ασμάτων", "is": "Ησαΐας",
+        "jr": "Ιερεμίας", "lm": "Θρήνοι", "ez": "Ιεζεκιήλ", "dn": "Δανιήλ",
+        "ho": "Ωσηέ", "jl": "Ιωήλ", "am": "Αμώς", "ob": "Οβδιού", "jn": "Ιωνάς",
+        "mi": "Μιχαίας", "na": "Ναούμ", "hk": "Αββακούμ", "zp": "Σοφονίας", "hg": "Αγγαίος",
+        "zc": "Ζαχαρίας", "ml": "Μαλαχίας", "mt": "Ματθαίος", "mk": "Μάρκος", "lk": "Λουκάς",
+        "jo": "Ιωάννης", "act": "Πράξεις", "rm": "Ρωμαίους", "1co": "Α' Κορινθίους", "2co": "Β' Κορινθίους",
+        "gl": "Γαλάτας", "eph": "Εφεσίους", "ph": "Φιλιππησίους", "cl": "Κολασσαείς",
+        "1ts": "Α' Θεσσαλονικείς", "2ts": "Β' Θεσσαλονικείς", "1tm": "Α' Τιμόθεον",
+        "2tm": "Β' Τιμόθεον", "tt": "Τίτον", "phm": "Φιλήμονα", "hb": "Εβραίους", "jm": "Ιακώβου",
+        "1pe": "Α' Πέτρου", "2pe": "Β' Πέτρου", "1jo": "Α' Ιωάννου", "2jo": "Β' Ιωάννου", "3jo": "Γ' Ιωάννου",
+        "jd": "Ιούδα", "re": "Αποκάλυψις"
+    },
+    fi: {
+        "gn": "1. Mooseksen", "ex": "2. Mooseksen", "lv": "3. Mooseksen", "nm": "4. Mooseksen", "dt": "5. Mooseksen",
+        "js": "Joosua", "jud": "Tuomarien", "rt": "Ruut", "1sm": "1. Samuelin", "2sm": "2. Samuelin",
+        "1kgs": "1. Kuninkaiden", "2kgs": "2. Kuninkaiden", "1ch": "1. Aikakirja", "2ch": "2. Aikakirja",
+        "ezr": "Esra", "ne": "Nehemia", "et": "Ester", "job": "Job", "ps": "Psalmit",
+        "prv": "Sananlaskut", "ec": "Saarnaaja", "so": "Laulujen laulu", "is": "Jesaja",
+        "jr": "Jeremia", "lm": "Valitusvirret", "ez": "Hesekiel", "dn": "Daniel",
+        "ho": "Hoosea", "jl": "Joel", "am": "Aamos", "ob": "Obadja", "jn": "Joona",
+        "mi": "Miika", "na": "Nahum", "hk": "Habakuk", "zp": "Sefanja", "hg": "Haggai",
+        "zc": "Sakarja", "ml": "Malakia", "mt": "Matteus", "mk": "Markus", "lk": "Luukas",
+        "jo": "Johannes", "act": "Apostolien teot", "rm": "Roomalaiskirje", "1co": "1. Korinttolaiskirje", "2co": "2. Korinttolaiskirje",
+        "gl": "Galatalaiskirje", "eph": "Efesolaiskirje", "ph": "Filippiläiskirje", "cl": "Kolossalaiskirje",
+        "1ts": "1. Tessalonikalaiskirje", "2ts": "2. Tessalonikalaiskirje", "1tm": "1. Timoteuksen kirje",
+        "2tm": "2. Timoteuksen kirje", "tt": "Tituksen kirje", "phm": "Filemonin kirje", "hb": "Heprealaiskirje", "jm": "Jaakobin kirje",
+        "1pe": "1. Pietarin kirje", "2pe": "2. Pietarin kirje", "1jo": "1. Johanneksen kirje", "2jo": "2. Johanneksen kirje", "3jo": "3. Johanneksen kirje",
+        "jd": "Juudaksen kirje", "re": "Ilmestyskirja"
+    },
+    ro: {
+        "gn": "Geneza", "ex": "Exodul", "lv": "Leviticul", "nm": "Numeri", "dt": "Deuteronomul",
+        "js": "Iosua", "jud": "Judecători", "rt": "Rut", "1sm": "1 Samuel", "2sm": "2 Samuel",
+        "1kgs": "1 Împărați", "2kgs": "2 Împărați", "1ch": "1 Cronici", "2ch": "2 Cronici",
+        "ezr": "Ezra", "ne": "Neemia", "et": "Estera", "job": "Iov", "ps": "Psalmii",
+        "prv": "Proverbe", "ec": "Eclesiastul", "so": "Cântarea Cântărilor", "is": "Isaia",
+        "jr": "Ieremia", "lm": "Plângerile", "ez": "Ezechiel", "dn": "Daniel",
+        "ho": "Osea", "jl": "Ioel", "am": "Amos", "ob": "Obadia", "jn": "Iona",
+        "mi": "Mica", "na": "Naum", "hk": "Habacuc", "zp": "Țefania", "hg": "Hagai",
+        "zc": "Zaharia", "ml": "Maleahi", "mt": "Matei", "mk": "Marcu", "lk": "Luca",
+        "jo": "Ioan", "act": "Faptele Apostolilor", "rm": "Romani", "1co": "1 Corinteni", "2co": "2 Corinteni",
+        "gl": "Galateni", "eph": "Efeseni", "ph": "Filipeni", "cl": "Coloseni",
+        "1ts": "1 Tesaloniceni", "2ts": "2 Tesaloniceni", "1tm": "1 Timotei",
+        "2tm": "2 Timotei", "tt": "Tit", "phm": "Filimon", "hb": "Evrei", "jm": "Iacov",
+        "1pe": "1 Petru", "2pe": "2 Petru", "1jo": "1 Ioan", "2jo": "2 Ioan", "3jo": "3 Ioan",
+        "jd": "Iuda", "re": "Apocalipsa"
+    },
+    ar: {
+        "gn": "التكوين", "ex": "الخروج", "lv": "اللاويين", "nm": "العدد", "dt": "التثنية",
+        "js": "يشوع", "jud": "القضاة", "rt": "راعوث", "1sm": "صموئيل الأول", "2sm": "صموئيل الثاني",
+        "1kgs": "الملوك الأول", "2kgs": "الملوك الثاني", "1ch": "أخبار الأيام الأول", "2ch": "أخبار الأيام الثاني",
+        "ezr": "عزرا", "ne": "نحميا", "et": "أستير", "job": "أيوب", "ps": "المزامير",
+        "prv": "الأمثال", "ec": "الجامعة", "so": "نشيد الأنشاد", "is": "إشعياء",
+        "jr": "إرميا", "lm": "المراثي", "ez": "حزقيال", "dn": "دانيال",
+        "ho": "هوشع", "jl": "يوئيل", "am": "عاموس", "ob": "عوبديا", "jn": "يونان",
+        "mi": "ميخا", "na": "ناحوم", "hk": "حبقوق", "zp": "صفنيا", "hg": "حجي",
+        "zc": "زكريا", "ml": "ملاخي", "mt": "متى", "mk": "مرقس", "lk": "لوقا",
+        "jo": "يوحنا", "act": "أعمال الرسل", "rm": "رومية", "1co": "كورنثوس الأولى", "2co": "كورنثوس الثانية",
+        "gl": "غلاطية", "eph": "أفسس", "ph": "فيلبي", "cl": "كولوسي",
+        "1ts": "تسالونيكي الأولى", "2ts": "تسالونيكي الثانية", "1tm": "تيموثاوس الأولى",
+        "2tm": "تيموثاوس الثانية", "tt": "تيطس", "phm": "فليمون", "hb": "العبرانيين", "jm": "يعقوب",
+        "1pe": "بطرس الأولى", "2pe": "بطرس الثانية", "1jo": "يوحنا الأولى", "2jo": "يوحنا الثانية", "3jo": "يوحنا الثالثة",
+        "jd": "يهوذا", "re": "الرؤيا"
+    },
+    vi: {
+        "gn": "Sáng-thế Ký", "ex": "Xuất Ê-díp-tô Ký", "lv": "Lê-vi Ký", "nm": "Dân-số Ký", "dt": "Phục-truyền Luật-lệ Ký",
+        "js": "Giô-suê", "jud": "Các Quan Xét", "rt": "Ru-tơ", "1sm": "1 Sa-mu-ên", "2sm": "2 Sa-mu-ên",
+        "1kgs": "1 Các Vua", "2kgs": "2 Các Vua", "1ch": "1 Sử-ký", "2ch": "2 Sử-ký",
+        "ezr": "E-xơ-ra", "ne": "Nê-hê-mi", "et": "Ê-stê", "job": "Gióp", "ps": "Thi-thiên",
+        "prv": "Châm-ngôn", "ec": "Truyền-đạo", "so": "Nhã-ca", "is": "Ê-sai",
+        "jr": "Giê-rê-mi", "lm": "Ca-thương", "ez": "Ê-xê-chi-ên", "dn": "Đa-ni-ên",
+        "ho": "Ô-sê", "jl": "Giô-ên", "am": "A-mốt", "ob": "Áp-đia", "jn": "Giô-na",
+        "mi": "Mi-chê", "na": "Na-hum", "hk": "Ha-ba-cúc", "zp": "Sô-phô-ni", "hg": "A-gai",
+        "zc": "Xa-cha-ri", "ml": "Ma-la-chi", "mt": "Ma-thi-ơ", "mk": "Mác", "lk": "Lu-ca",
+        "jo": "Giăng", "act": "Công-vụ", "rm": "Rô-ma", "1co": "1 Cô-rinh-tô", "2co": "2 Cô-rinh-tô",
+        "gl": "Ga-la-ti", "eph": "Ê-phê-sô", "ph": "Phi-líp", "cl": "Cô-lô-se",
+        "1ts": "1 Tê-sa-lô-ni-ca", "2ts": "2 Tê-sa-lô-ni-ca", "1tm": "1 Ti-mô-thê",
+        "2tm": "2 Ti-mô-thê", "tt": "Tít", "phm": "Phi-lê-môn", "hb": "Hê-bơ-rơ", "jm": "Gia-cơ",
+        "1pe": "1 Phi-e-rơ", "2pe": "2 Phi-e-rơ", "1jo": "1 Giăng", "2jo": "2 Giăng", "3jo": "3 Giăng",
+        "jd": "Giu-đa", "re": "Khải-huyền"
+    }
 };
 
 function getBookName(book) {
-    return BOOK_NAMES[book.abbrev] || book.name || book.abbrev;
+    const langDict = BOOK_NAMES[state.lang] || BOOK_NAMES['es'];
+    return langDict[book.abbrev] || book.name || book.abbrev;
 }
 
 // Application State
 const state = {
     bibleData: null,
+    lang: localStorage.getItem('lang') || 'es',
+    apiFile: localStorage.getItem('apiFile') || 'es_rvr',
     currentBook: null,
     currentChapter: 1,
     searchResults: [],
@@ -62,7 +271,9 @@ const elements = {
     searchModal: document.getElementById('search-modal'),
     modalSearchInput: document.getElementById('modal-search-input'),
     searchResultsContainer: document.getElementById('search-results'),
-    closeSearch: document.getElementById('close-search')
+    closeSearch: document.getElementById('close-search'),
+    languageSelect: document.getElementById('language-select'),
+    languageSelectMobile: document.getElementById('language-select-mobile')
 };
 
 // --- Initialization ---
@@ -71,6 +282,11 @@ async function init() {
     setupTheme();
     setupEventListeners();
     setupPinState();
+
+    // Sync language selects with current state
+    if (elements.languageSelect) elements.languageSelect.value = state.lang;
+    if (elements.languageSelectMobile) elements.languageSelectMobile.value = state.lang;
+
     await fetchBibleData();
     renderBooks();
 
@@ -87,12 +303,41 @@ async function init() {
 
 async function fetchBibleData() {
     try {
-        const response = await fetch(BIBLE_API_BASE);
+        const url = `https://raw.githubusercontent.com/thiagobodruk/bible/master/json/${state.apiFile}.json`;
+        const response = await fetch(url);
         state.bibleData = await response.json();
-        console.log('Bible data loaded:', state.bibleData.length, 'books');
+        console.log('Bible data loaded:', state.bibleData.length, 'books', state.lang);
     } catch (error) {
         console.error('Error loading Bible data:', error);
         elements.booksList.innerHTML = '<p class="p-4 text-red-500 text-sm">Error al cargar datos. Reintente más tarde.</p>';
+        throw error;
+    }
+}
+
+// --- Language Controller ---
+
+async function changeLanguage(lang, apiFile) {
+    state.lang = lang;
+    state.apiFile = apiFile;
+    localStorage.setItem('lang', lang);
+    localStorage.setItem('apiFile', apiFile);
+
+    // Sync selects
+    elements.languageSelect.value = lang;
+    elements.languageSelectMobile.value = lang;
+
+    // Show loading
+    elements.versesContainer.innerHTML = '<div class="animate-pulse space-y-4 pt-10"><div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div><div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-5/6"></div><div class="h-4 bg-gray-200 dark:bg-gray-800 rounded w-4/6"></div></div>';
+
+    // Remember current position
+    const { currentBook, currentChapter } = state;
+
+    await fetchBibleData();
+
+    if (currentBook) {
+        navigateTo(currentBook, currentChapter || 1);
+    } else {
+        renderBooks();
     }
 }
 
@@ -403,9 +648,14 @@ function toggleTheme() {
 }
 
 function updateThemeIcon() {
-    elements.themeIcon.innerHTML = state.theme === 'light'
+    const iconHtml = state.theme === 'light'
         ? '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>'
         : '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>';
+
+    elements.themeIcon.innerHTML = iconHtml;
+    if (elements.themeIconMobile) {
+        elements.themeIconMobile.innerHTML = iconHtml;
+    }
 }
 
 function setupPinState() {
@@ -476,11 +726,41 @@ function closeSearchModal() {
 
 function setupEventListeners() {
     elements.themeToggle.addEventListener('click', toggleTheme);
+    if (elements.themeToggleMobile) {
+        elements.themeToggleMobile.addEventListener('click', toggleTheme);
+    }
     elements.menuToggle.addEventListener('click', toggleSidebar);
     elements.sidebarOverlay.addEventListener('click', closeSidebar);
     elements.closeSidebar.addEventListener('click', closeSidebar);
     if (elements.pinSidebar) {
         elements.pinSidebar.addEventListener('click', togglePinSidebar);
+    }
+
+    const handleLanguageChange = (e) => {
+        const lang = e.target.value;
+        const apiFiles = {
+            'es': 'es_rvr',
+            'en': 'en_kjv',
+            'pt': 'pt_nvi',
+            'fr': 'fr_apee',
+            'de': 'de_schlachter',
+            'ru': 'ru_synodal',
+            'ko': 'ko_ko',
+            'zh': 'zh_cuv',
+            'el': 'el_greek',
+            'fi': 'fi_finnish',
+            'ro': 'ro_cornilescu',
+            'ar': 'ar_svd',
+            'vi': 'vi_vietnamese'
+        };
+        changeLanguage(lang, apiFiles[lang]);
+    };
+
+    if (elements.languageSelect) {
+        elements.languageSelect.addEventListener('change', handleLanguageChange);
+    }
+    if (elements.languageSelectMobile) {
+        elements.languageSelectMobile.addEventListener('change', handleLanguageChange);
     }
 
     // Search related
