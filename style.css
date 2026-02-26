@@ -1,0 +1,152 @@
+/* Custom styles and animations for Bible App */
+
+:root {
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Glassmorphism Classes */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Typography Enhancements */
+.font-serif {
+    font-variant-numeric: oldstyle-nums;
+}
+
+.verse-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6em;
+    font-weight: 600;
+    vertical-align: super;
+    margin-right: 0.4em;
+    color: var(--accent);
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Sidebar Hover Effects */
+.book-item {
+    transition: all 0.2s ease;
+    border-radius: 12px;
+}
+
+.book-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .book-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.book-item.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* Gemini Glow Effect */
+.gemini-glow {
+    position: relative;
+}
+
+.gemini-glow::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+    filter: blur(15px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    border-radius: inherit;
+}
+
+.gemini-glow:hover::after {
+    opacity: 0.2;
+}
+
+/* Verse selection effect */
+.verse-block {
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: background 0.2s ease, background-color 1.5s ease;
+}
+
+.verse-block:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.dark .verse-block:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* Sidebar Grid Items */
+.nav-grid-item {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid transparent;
+}
+
+.dark .nav-grid-item {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-grid-item:hover {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+/* Verse Highlight Animation */
+@keyframes highlightFade {
+    0% { background-color: rgba(59, 130, 246, 0.3); }
+    100% { background-color: transparent; }
+}
+
+.verse-highlight {
+    animation: highlightFade 2.5s ease-out forwards;
+    border-radius: 8px;
+}
