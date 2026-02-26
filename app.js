@@ -412,7 +412,7 @@ function setupPinState() {
     if (state.isSidebarPinned && window.innerWidth >= 768) {
         elements.pinSidebar.classList.add('pinned');
         elements.sidebar.classList.remove('-translate-x-full');
-        elements.mainContent.classList.add('md:ml-72');
+        elements.mainContent.classList.add('sidebar-pinned-margin');
         state.isSidebarOpen = true;
     }
 }
@@ -423,7 +423,7 @@ function togglePinSidebar() {
 
     if (state.isSidebarPinned) {
         elements.pinSidebar.classList.add('pinned');
-        elements.mainContent.classList.add('md:ml-72');
+        elements.mainContent.classList.add('sidebar-pinned-margin');
         elements.sidebarOverlay.classList.add('hidden');
         if (!state.isSidebarOpen) {
             state.isSidebarOpen = true;
@@ -431,7 +431,7 @@ function togglePinSidebar() {
         }
     } else {
         elements.pinSidebar.classList.remove('pinned');
-        elements.mainContent.classList.remove('md:ml-72');
+        elements.mainContent.classList.remove('sidebar-pinned-margin');
         if (state.isSidebarOpen) {
             elements.sidebarOverlay.classList.remove('hidden');
         }
