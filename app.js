@@ -260,7 +260,6 @@ const elements = {
     breadcrumb: document.getElementById('bread-crumb'),
     fontDecreaseBtn: document.getElementById('font-decrease'),
     fontIncreaseBtn: document.getElementById('font-increase'),
-    fontFamilyBtn: document.getElementById('font-family-toggle'),
     readerContainer: document.getElementById('reader-container'),
     initialState: document.getElementById('initial-state'),
     themeToggle: document.getElementById('theme-toggle'),
@@ -305,15 +304,16 @@ const liveState = {
 
 function applyTypography() {
     if (!elements.readerContainer) return;
-
-    const sansFamily = "'Inter', system-ui, -apple-system, sans-serif";
-    const serifFamily = "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif";
-
-    const actualFamily = state.fontFamily === 'sans' ? sansFamily : serifFamily;
-
-    // Apply via CSS custom variables
     elements.readerContainer.style.setProperty('--reader-font-size', `${state.fontSize}rem`);
-    elements.readerContainer.style.setProperty('--reader-font-family', actualFamily);
+
+    // If we are currently tracking live, re-apply the highlight since resizing might have moved scroll
+    if (liveState.isLiveMode && liveState.lastPlayedIndex !== -1) {
+        const globalPos = getGlobalPosition();
+        if (globalPos) {
+            // Let UI stabilize, then re-scroll
+            setTimeout(() => highlightActiveVerse(globalPos.verseData.verseNum), 100);
+        }
+    }
 }
 
 function handleFontDecrease() {
@@ -361,9 +361,6 @@ async function init() {
     // Initialize Typography
     const storedFontSize = localStorage.getItem('fontSize');
     if (storedFontSize) state.fontSize = parseFloat(storedFontSize);
-
-    const storedFontFamily = localStorage.getItem('fontFamily');
-    if (storedFontFamily) state.fontFamily = storedFontFamily;
 
     applyTypography();
 
@@ -1014,7 +1011,6 @@ function setupEventListeners() {
 
     if (elements.fontDecreaseBtn) elements.fontDecreaseBtn.addEventListener('click', handleFontDecrease);
     if (elements.fontIncreaseBtn) elements.fontIncreaseBtn.addEventListener('click', handleFontIncrease);
-    if (elements.fontFamilyBtn) elements.fontFamilyBtn.addEventListener('click', handleFontFamilyToggle);
 
     elements.menuToggle.addEventListener('click', toggleSidebar);
     elements.sidebarOverlay.addEventListener('click', closeSidebar);
