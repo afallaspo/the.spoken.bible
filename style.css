@@ -188,3 +188,15 @@ html {
     animation: highlightFade 2.5s ease-out forwards;
     border-radius: 8px;
 }
+
+/* Persistent Active Verse */
+.verse-active {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+}
+
+.dark .verse-active {
+    background-color: rgba(59, 130, 246, 0.25);
+    border-left: 3px solid var(--accent);
+}

@@ -237,6 +237,8 @@ function getBookName(book) {
 // Application State
 const state = {
     bibleData: null,
+    fontSize: 1.25, // default rem
+    fontFamily: 'serif', // default family
     lang: localStorage.getItem('lang') || 'es',
     apiFile: localStorage.getItem('apiFile') || 'es_rvr',
     currentBook: null,
@@ -256,6 +258,9 @@ const elements = {
     versesContainer: document.getElementById('verses-container'),
     chapterTitle: document.getElementById('chapter-title'),
     breadcrumb: document.getElementById('bread-crumb'),
+    fontDecreaseBtn: document.getElementById('font-decrease'),
+    fontIncreaseBtn: document.getElementById('font-increase'),
+    fontFamilyBtn: document.getElementById('font-family-toggle'),
     readerContainer: document.getElementById('reader-container'),
     initialState: document.getElementById('initial-state'),
     themeToggle: document.getElementById('theme-toggle'),
@@ -275,8 +280,65 @@ const elements = {
     searchResultsContainer: document.getElementById('search-results'),
     closeSearch: document.getElementById('close-search'),
     languageSelect: document.getElementById('language-select'),
-    languageSelectMobile: document.getElementById('language-select-mobile')
+    languageSelectMobile: document.getElementById('language-select-mobile'),
+    liveAudioBar: document.getElementById('live-audio-bar'),
+    liveAudioReference: document.getElementById('live-audio-reference'),
+    liveAudioSyncBtn: document.getElementById('live-audio-sync-btn'),
+    liveAudioPlayBtn: document.getElementById('live-audio-play-btn'),
+    livePlayIcon: document.getElementById('live-play-icon'),
+    livePauseIcon: document.getElementById('live-pause-icon')
 };
+
+// --- Live Audio State ---
+const liveState = {
+    GLOBAL_EPOCH: new Date("2024-01-01T00:00:00Z").getTime(),
+    VERSE_DURATION: 12000, // 12 seconds fixed per verse ensures global sync
+    flatBibleList: [],
+    isLiveMode: true,
+    isPlaying: false,
+    currentUtterance: null,
+    syncInterval: null,
+    lastPlayedIndex: -1
+};
+
+// --- Typography Controllers ---
+
+function applyTypography() {
+    if (!elements.readerContainer) return;
+
+    const sansFamily = "'Inter', system-ui, -apple-system, sans-serif";
+    const serifFamily = "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif";
+
+    const actualFamily = state.fontFamily === 'sans' ? sansFamily : serifFamily;
+
+    // Apply via CSS custom variables
+    elements.readerContainer.style.setProperty('--reader-font-size', `${state.fontSize}rem`);
+    elements.readerContainer.style.setProperty('--reader-font-family', actualFamily);
+}
+
+function handleFontDecrease() {
+    // Min font size 0.875rem
+    if (state.fontSize > 0.875) {
+        state.fontSize -= 0.125;
+        localStorage.setItem('fontSize', state.fontSize.toString());
+        applyTypography();
+    }
+}
+
+function handleFontIncrease() {
+    // Max font size 2.5rem
+    if (state.fontSize < 2.5) {
+        state.fontSize += 0.125;
+        localStorage.setItem('fontSize', state.fontSize.toString());
+        applyTypography();
+    }
+}
+
+function handleFontFamilyToggle() {
+    state.fontFamily = state.fontFamily === 'serif' ? 'sans' : 'serif';
+    localStorage.setItem('fontFamily', state.fontFamily);
+    applyTypography();
+}
 
 // --- Initialization ---
 
@@ -292,12 +354,30 @@ async function init() {
     await fetchBibleData();
     renderBooks();
 
-    // Check for deep links or restore last view
-    const lastBook = localStorage.getItem('lastBook');
-    const lastChapter = parseInt(localStorage.getItem('lastChapter'));
+    // Check live mode preference. Default to true for new users.
+    const storedLiveMode = localStorage.getItem('isLiveMode');
+    liveState.isLiveMode = storedLiveMode === null ? true : storedLiveMode === 'true';
 
-    if (lastBook) {
-        navigateTo(lastBook, lastChapter || 1);
+    // Initialize Typography
+    const storedFontSize = localStorage.getItem('fontSize');
+    if (storedFontSize) state.fontSize = parseFloat(storedFontSize);
+
+    const storedFontFamily = localStorage.getItem('fontFamily');
+    if (storedFontFamily) state.fontFamily = storedFontFamily;
+
+    applyTypography();
+
+    initLiveAudio();
+
+    // If not live tracking and has a last book, go there
+    if (!liveState.isLiveMode) {
+        const lastBook = localStorage.getItem('lastBook');
+        const lastChapter = parseInt(localStorage.getItem('lastChapter'));
+        if (lastBook) {
+            navigateTo(lastBook, lastChapter || 1, null, true);
+        }
+    } else {
+        elements.initialState.classList.add('hidden');
     }
 }
 
@@ -335,9 +415,10 @@ async function changeLanguage(lang, apiFile) {
     const { currentBook, currentChapter } = state;
 
     await fetchBibleData();
+    buildFlatBibleList();
 
     if (currentBook) {
-        navigateTo(currentBook, currentChapter || 1);
+        navigateTo(currentBook, currentChapter || 1, null, true);
     } else {
         renderBooks();
     }
@@ -458,9 +539,16 @@ function navGoBack() {
     renderBooks();
 }
 
-function navigateTo(abbrev, chapterNum, verseNum = null) {
+function navigateTo(abbrev, chapterNum, verseNum = null, isAuto = false) {
     const book = state.bibleData.find(b => b.abbrev === abbrev);
     if (!book) return;
+
+    if (!isAuto && liveState.isLiveMode) {
+        liveState.isLiveMode = false;
+        localStorage.setItem('isLiveMode', 'false');
+        elements.liveAudioSyncBtn.classList.remove('hidden');
+        elements.liveAudioReference.textContent = 'Modo Manual';
+    }
 
     state.currentBook = abbrev;
     state.currentChapter = chapterNum;
@@ -630,6 +718,198 @@ function highlightText(text, query) {
     ).join('');
 }
 
+// --- Live Audio Controller ---
+
+function buildFlatBibleList() {
+    liveState.flatBibleList = [];
+    if (!state.bibleData) return;
+
+    state.bibleData.forEach(book => {
+        book.chapters.forEach((chapter, cIndex) => {
+            chapter.forEach((verse, vIndex) => {
+                liveState.flatBibleList.push({
+                    abbrev: book.abbrev,
+                    chapterNum: cIndex + 1,
+                    verseNum: vIndex + 1,
+                    text: verse
+                });
+            });
+        });
+    });
+}
+
+function getGlobalPosition() {
+    if (!liveState.flatBibleList.length) return null;
+
+    // Calculate global delta regardless of language
+    const elapsed = Date.now() - liveState.GLOBAL_EPOCH;
+    const totalDuration = liveState.flatBibleList.length * liveState.VERSE_DURATION;
+    const currentPositionInLoop = elapsed % totalDuration;
+    const globalVerseIndex = Math.floor(currentPositionInLoop / liveState.VERSE_DURATION);
+
+    return {
+        index: globalVerseIndex,
+        verseData: liveState.flatBibleList[globalVerseIndex]
+    };
+}
+
+function updateLiveUI() {
+    if (!liveState.isLiveMode) {
+        document.querySelectorAll('.verse-highlight').forEach(el => el.classList.remove('verse-highlight'));
+        return;
+    }
+
+    elements.liveAudioSyncBtn.classList.add('hidden');
+
+    const globalPos = getGlobalPosition();
+    if (!globalPos) return;
+
+    const { abbrev, chapterNum, verseNum, text } = globalPos.verseData;
+    const bookName = getBookName({ abbrev });
+
+    elements.liveAudioReference.textContent = `${bookName} ${chapterNum}:${verseNum}`;
+
+    // Play audio logic
+    if (liveState.isPlaying && globalPos.index !== liveState.lastPlayedIndex) {
+        liveState.lastPlayedIndex = globalPos.index;
+        playVerseAudio(text);
+    }
+
+    // Navigate and Highlight
+    if (state.currentBook !== abbrev || state.currentChapter !== chapterNum) {
+        navigateTo(abbrev, chapterNum, verseNum, true);
+    } else {
+        highlightActiveVerse(verseNum);
+    }
+}
+
+function highlightActiveVerse(verseNum) {
+    document.querySelectorAll('.verse-active').forEach(el => el.classList.remove('verse-active'));
+    const verseEl = document.getElementById(`verse-${verseNum}`);
+    if (verseEl) {
+        verseEl.classList.add('verse-active');
+
+        // Auto-scroll if out of view
+        const rect = verseEl.getBoundingClientRect();
+        const isInView = (
+            rect.top >= 100 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) - 100
+        );
+        if (!isInView) {
+            const yOffset = -200; // Account for headers
+            const y = rect.top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    }
+}
+
+function getBestVoice(targetLang) {
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return null;
+
+    // Filter by language prefix
+    const prefix = targetLang.split('-')[0].toLowerCase();
+    const langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(prefix));
+
+    if (langVoices.length === 0) return null;
+
+    // Prefer high quality / natural voices
+    const premiumKeywords = ['premium', 'enhanced', 'natural', 'google', 'neural', 'multilingual'];
+
+    // First pass: look for premium keywords
+    for (const v of langVoices) {
+        if (premiumKeywords.some(kw => v.name.toLowerCase().includes(kw))) {
+            return v;
+        }
+    }
+
+    // Second pass: well-known pleasant voices (Mac/iOS/Windows)
+    const goodNames = ['paulina', 'monica', 'jorge', 'luciana', 'samantha', 'tom', 'ava', 'microsoft elena', 'microsoft sabina'];
+    for (const v of langVoices) {
+        if (goodNames.some(name => v.name.toLowerCase().includes(name))) {
+            return v;
+        }
+    }
+
+    // Default fallback
+    return langVoices.find(v => v.default) || langVoices[0];
+}
+
+function playVerseAudio(verseText) {
+    if (!liveState.isPlaying) return;
+
+    if (liveState.currentUtterance) {
+        window.speechSynthesis.cancel();
+    }
+
+    liveState.currentUtterance = new SpeechSynthesisUtterance(verseText);
+
+    // Default mapped locales
+    const langMap = {
+        'es': 'es-MX', // MX often has smoother default voices
+        'en': 'en-US', 'pt': 'pt-BR', 'fr': 'fr-FR',
+        'de': 'de-DE', 'ru': 'ru-RU', 'ko': 'ko-KR', 'zh': 'zh-CN',
+        'el': 'el-GR', 'fi': 'fi-FI', 'ro': 'ro-RO', 'ar': 'ar-SA', 'vi': 'vi-VN'
+    };
+
+    const targetLang = langMap[state.lang] || 'es-ES';
+    liveState.currentUtterance.lang = targetLang;
+
+    // Attempt to set a high-quality human voice
+    const bestVoice = getBestVoice(targetLang);
+    if (bestVoice) {
+        liveState.currentUtterance.voice = bestVoice;
+    }
+
+    // Tweak to make it softer, slower, and sweeter
+    liveState.currentUtterance.rate = 0.88; // Slower pace for contemplation
+    liveState.currentUtterance.pitch = 1.05; // Slightly sweeter/higher tone
+    liveState.currentUtterance.volume = 1.0;
+
+    window.speechSynthesis.speak(liveState.currentUtterance);
+}
+
+function toggleLiveAudio() {
+    liveState.isPlaying = !liveState.isPlaying;
+
+    if (liveState.isPlaying) {
+        elements.livePlayIcon.classList.add('hidden');
+        elements.livePauseIcon.classList.remove('hidden');
+        liveState.isLiveMode = true;
+
+        // Restart voices if suspended 
+        if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+        } else {
+            liveState.lastPlayedIndex = -1; // force trigger play
+        }
+        updateLiveUI();
+    } else {
+        elements.livePlayIcon.classList.remove('hidden');
+        elements.livePauseIcon.classList.add('hidden');
+        window.speechSynthesis.cancel();
+    }
+}
+
+function syncToLive() {
+    liveState.isLiveMode = true;
+    localStorage.setItem('isLiveMode', 'true');
+    liveState.lastPlayedIndex = -1;
+    updateLiveUI();
+}
+
+function initLiveAudio() {
+    buildFlatBibleList();
+    if (liveState.syncInterval) clearInterval(liveState.syncInterval);
+    liveState.syncInterval = setInterval(() => updateLiveUI(), 1000);
+
+    // Preload synthesis voices to ensure getBestVoice works when Play is clicked
+    if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+        window.speechSynthesis.getVoices();
+    }
+}
+
 // --- UI Utilities ---
 
 function setupTheme() {
@@ -731,6 +1011,11 @@ function setupEventListeners() {
     if (elements.themeToggleMobile) {
         elements.themeToggleMobile.addEventListener('click', toggleTheme);
     }
+
+    if (elements.fontDecreaseBtn) elements.fontDecreaseBtn.addEventListener('click', handleFontDecrease);
+    if (elements.fontIncreaseBtn) elements.fontIncreaseBtn.addEventListener('click', handleFontIncrease);
+    if (elements.fontFamilyBtn) elements.fontFamilyBtn.addEventListener('click', handleFontFamilyToggle);
+
     elements.menuToggle.addEventListener('click', toggleSidebar);
     elements.sidebarOverlay.addEventListener('click', closeSidebar);
     elements.closeSidebar.addEventListener('click', closeSidebar);
@@ -783,6 +1068,13 @@ function setupEventListeners() {
             performSearch(query);
         }
     });
+
+    if (elements.liveAudioPlayBtn) {
+        elements.liveAudioPlayBtn.addEventListener('click', toggleLiveAudio);
+    }
+    if (elements.liveAudioSyncBtn) {
+        elements.liveAudioSyncBtn.addEventListener('click', syncToLive);
+    }
 }
 
 // Global expose for onclick handlers

@@ -100,11 +100,44 @@
                     </svg>
                 </div>
             </div>
+
+            <div class="h-6 w-px bg-gray-200 dark:bg-gray-800 mx-1"></div>
+
+            <!-- Typography Controls -->
+            <div
+                class="flex items-center bg-gray-50 dark:bg-gray-900 rounded-full p-1 border border-gray-100 dark:border-gray-800">
+                <button id="font-decrease"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
+                    title="Disminuir Letra">
+                    <span class="text-sm font-medium">A-</span>
+                </button>
+                <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-0.5"></div>
+                <button id="font-increase"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
+                    title="Aumentar Letra">
+                    <span class="text-base font-medium">A+</span>
+                </button>
+                <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-0.5"></div>
+                <button id="font-family-toggle"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-white dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
+                    title="Cambiar tipografía">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 21 9-18 9 18" />
+                        <path d="M7 13h10" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="h-6 w-px bg-gray-200 dark:bg-gray-800 mx-1"></div>
+
             <button id="theme-toggle"
-                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors hidden sm:block">
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" title="Cambiar tema"
+                aria-label="Cambiar tema oscuro/claro">
                 <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round"></svg>
+                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                </svg>
             </button>
             <div class="sm:hidden flex items-center gap-1">
                 <select id="language-select-mobile"
@@ -179,14 +212,15 @@
         <div id="content-area"
             class="w-full max-w-3xl px-6 py-12 md:py-20 min-h-screen transition-opacity duration-300">
             <!-- Reader content goes here -->
-            <div id="reader-container" class="opacity-0 translate-y-4 transition-all duration-500">
+            <div id="reader-container" class="opacity-0 translate-y-4 transition-all duration-500"
+                style="font-size: var(--reader-font-size, 1.25rem); font-family: var(--reader-font-family, serif);">
                 <div id="bread-crumb"
-                    class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-widest">Génesis
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-widest"
+                    style="font-family: 'Inter', sans-serif;">Génesis
                     • Capítulo 1</div>
-                <h2 id="chapter-title" class="text-4xl md:text-5xl font-serif font-bold mb-10 leading-tight">En el
+                <h2 id="chapter-title" class="text-[2em] font-bold mb-10 leading-tight">En el
                     principio...</h2>
-                <div id="verses-container"
-                    class="space-y-6 text-xl md:text-2xl font-serif leading-relaxed text-gray-800 dark:text-gray-200">
+                <div id="verses-container" class="space-y-6 leading-relaxed text-gray-800 dark:text-gray-200">
                     <!-- Verses populated by JS -->
                 </div>
             </div>
@@ -238,7 +272,48 @@
         </div>
     </div>
 
-    <script src="app.js?v=2"></script>
+    <!-- Live Audio Bar -->
+    <div id="live-audio-bar"
+        class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-900 p-4 z-[55] transform transition-transform duration-300 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+        <div class="max-w-3xl mx-auto flex items-center justify-between pl-0 pr-4 md:px-0">
+            <div class="flex items-center gap-3">
+                <div class="relative flex h-3 w-3 ml-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">En Vivo Global
+                    </div>
+                    <div id="live-audio-reference" class="text-sm font-medium text-gray-900 dark:text-gray-100">Cargando
+                        conexión...</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="live-audio-sync-btn"
+                    class="hidden text-xs text-gemini-accent font-medium hover:underline transition-all">Sincronizar</button>
+                <button id="live-audio-play-btn"
+                    class="w-12 h-12 rounded-full bg-gemini-accent text-white flex items-center justify-center hover:bg-gemini-accent/90 transition-colors shadow-lg shadow-gemini-accent/20">
+                    <svg id="live-play-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" class="ml-1">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <svg id="live-pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Padding for bottom so content isn't hidden behind the audio bar -->
+    <div class="h-24"></div>
+
+    <script src="app.js?v=3"></script>
 </body>
 
 </html>
