@@ -697,7 +697,7 @@ function performSearch(query) {
 function renderSearchResults(results, query) {
     elements.searchResultsContainer.innerHTML = `
         <div class="mb-4 text-sm text-gray-500">
-            ${results.length} resultados para "${query}"
+            ${results.length} results for "${query}"
         </div>
         ${results.map(res => `
             <div class="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 cursor-pointer hover:border-gemini-accent transition-all"
@@ -715,7 +715,7 @@ function renderSearchResults(results, query) {
     if (results.length === 0) {
         elements.searchResultsContainer.innerHTML = `
             <div class="flex flex-col items-center justify-center pt-20 text-center">
-                <p class="text-gray-500">No se encontraron resultados para "${query}"</p>
+                <p class="text-gray-500">No results found for "${query}"</p>
             </div>
         `;
     }
@@ -780,13 +780,13 @@ function updateLiveUI() {
     elements.liveAudioReference.textContent = `${bookName} ${chapterNum}:${verseNum}`;
 
     if (elements.liveLoopCounter) {
-        elements.liveLoopCounter.textContent = `Lectura #${globalPos.loops}`;
+        elements.liveLoopCounter.textContent = `Reading #${globalPos.loops}`;
         elements.liveLoopCounter.classList.remove('hidden');
     }
 
     if (!liveState.isLiveMode) {
         document.querySelectorAll('.verse-active').forEach(el => el.classList.remove('verse-active'));
-        elements.liveBtnText.textContent = "Sincronizar en Vivo";
+        elements.liveBtnText.textContent = "Activate Live";
         elements.livePlayIcon.classList.add('hidden');
         elements.livePauseIcon.classList.add('hidden');
         elements.liveSyncIcon.classList.remove('hidden');
@@ -796,11 +796,11 @@ function updateLiveUI() {
     // Is in live mode
     elements.liveSyncIcon.classList.add('hidden');
     if (liveState.isPlaying) {
-        elements.liveBtnText.textContent = "Pausar Audio";
+        elements.liveBtnText.textContent = "Pause Audio";
         elements.livePlayIcon.classList.add('hidden');
         elements.livePauseIcon.classList.remove('hidden');
     } else {
-        elements.liveBtnText.textContent = "Activar Audio";
+        elements.liveBtnText.textContent = "Activate Audio";
         elements.livePlayIcon.classList.remove('hidden');
         elements.livePauseIcon.classList.add('hidden');
     }
