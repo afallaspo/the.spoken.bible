@@ -282,15 +282,17 @@ const elements = {
     languageSelectMobile: document.getElementById('language-select-mobile'),
     liveAudioBar: document.getElementById('live-audio-bar'),
     liveAudioReference: document.getElementById('live-audio-reference'),
-    liveAudioSyncBtn: document.getElementById('live-audio-sync-btn'),
     liveAudioPlayBtn: document.getElementById('live-audio-play-btn'),
     livePlayIcon: document.getElementById('live-play-icon'),
-    livePauseIcon: document.getElementById('live-pause-icon')
+    livePauseIcon: document.getElementById('live-pause-icon'),
+    liveSyncIcon: document.getElementById('live-sync-icon'),
+    liveBtnText: document.getElementById('live-btn-text'),
+    liveLoopCounter: document.getElementById('live-loop-counter')
 };
 
 // --- Live Audio State ---
 const liveState = {
-    GLOBAL_EPOCH: new Date("2024-01-01T00:00:00Z").getTime(),
+    GLOBAL_EPOCH: new Date("2026-02-01T00:00:00Z").getTime(),
     VERSE_DURATION: 12000, // 12 seconds fixed per verse ensures global sync
     flatBibleList: [],
     isLiveMode: true,
@@ -375,6 +377,19 @@ async function init() {
         }
     } else {
         elements.initialState.classList.add('hidden');
+        // Navigate to the current live verse for visual orientation,
+        // then auto-start playback (browsers allow audio after page-interactive)
+        const globalPos = getGlobalPosition();
+        if (globalPos) {
+            const { abbrev, chapterNum, verseNum } = globalPos.verseData;
+            // Immediate visual sync
+            navigateTo(abbrev, chapterNum, verseNum, true);
+
+            // Start audio if allowed
+            setTimeout(() => {
+                if (!liveState.isPlaying) toggleLiveAudio();
+            }, 500);
+        }
     }
 }
 
@@ -741,23 +756,21 @@ function getGlobalPosition() {
     // Calculate global delta regardless of language
     const elapsed = Date.now() - liveState.GLOBAL_EPOCH;
     const totalDuration = liveState.flatBibleList.length * liveState.VERSE_DURATION;
+
+    // Calculate loops
+    const loops = Math.floor(elapsed / totalDuration) + 1;
+
     const currentPositionInLoop = elapsed % totalDuration;
     const globalVerseIndex = Math.floor(currentPositionInLoop / liveState.VERSE_DURATION);
 
     return {
         index: globalVerseIndex,
-        verseData: liveState.flatBibleList[globalVerseIndex]
+        verseData: liveState.flatBibleList[globalVerseIndex],
+        loops: loops
     };
 }
 
 function updateLiveUI() {
-    if (!liveState.isLiveMode) {
-        document.querySelectorAll('.verse-highlight').forEach(el => el.classList.remove('verse-highlight'));
-        return;
-    }
-
-    elements.liveAudioSyncBtn.classList.add('hidden');
-
     const globalPos = getGlobalPosition();
     if (!globalPos) return;
 
@@ -765,6 +778,32 @@ function updateLiveUI() {
     const bookName = getBookName({ abbrev });
 
     elements.liveAudioReference.textContent = `${bookName} ${chapterNum}:${verseNum}`;
+
+    if (elements.liveLoopCounter) {
+        elements.liveLoopCounter.textContent = `Lectura #${globalPos.loops}`;
+        elements.liveLoopCounter.classList.remove('hidden');
+    }
+
+    if (!liveState.isLiveMode) {
+        document.querySelectorAll('.verse-active').forEach(el => el.classList.remove('verse-active'));
+        elements.liveBtnText.textContent = "Sincronizar en Vivo";
+        elements.livePlayIcon.classList.add('hidden');
+        elements.livePauseIcon.classList.add('hidden');
+        elements.liveSyncIcon.classList.remove('hidden');
+        return;
+    }
+
+    // Is in live mode
+    elements.liveSyncIcon.classList.add('hidden');
+    if (liveState.isPlaying) {
+        elements.liveBtnText.textContent = "Pausar Audio";
+        elements.livePlayIcon.classList.add('hidden');
+        elements.livePauseIcon.classList.remove('hidden');
+    } else {
+        elements.liveBtnText.textContent = "Activar Audio";
+        elements.livePlayIcon.classList.remove('hidden');
+        elements.livePauseIcon.classList.add('hidden');
+    }
 
     // Play audio logic
     if (liveState.isPlaying && globalPos.index !== liveState.lastPlayedIndex) {
@@ -867,37 +906,48 @@ function playVerseAudio(verseText) {
 }
 
 function toggleLiveAudio() {
+    if (!liveState.isLiveMode) {
+        syncToLive();
+        return;
+    }
+
     liveState.isPlaying = !liveState.isPlaying;
 
     if (liveState.isPlaying) {
-        elements.livePlayIcon.classList.add('hidden');
-        elements.livePauseIcon.classList.remove('hidden');
-        liveState.isLiveMode = true;
-
-        // Restart voices if suspended 
-        if (window.speechSynthesis.paused) {
-            window.speechSynthesis.resume();
-        } else {
-            liveState.lastPlayedIndex = -1; // force trigger play
+        liveState.lastPlayedIndex = -1; // force trigger play/scroll
+        const globalPos = getGlobalPosition();
+        if (globalPos) {
+            playVerseAudio(globalPos.verseData.text);
         }
-        updateLiveUI();
     } else {
-        elements.livePlayIcon.classList.remove('hidden');
-        elements.livePauseIcon.classList.add('hidden');
         window.speechSynthesis.cancel();
     }
+    updateLiveUI();
 }
 
 function syncToLive() {
     liveState.isLiveMode = true;
     localStorage.setItem('isLiveMode', 'true');
     liveState.lastPlayedIndex = -1;
+
+    // Auto-scroll to correct position upon sync
+    const globalPos = getGlobalPosition();
+    if (globalPos) {
+        const { abbrev, chapterNum, verseNum } = globalPos.verseData;
+        navigateTo(abbrev, chapterNum, verseNum, true);
+    }
+
     updateLiveUI();
 }
 
 function initLiveAudio() {
     buildFlatBibleList();
     if (liveState.syncInterval) clearInterval(liveState.syncInterval);
+
+    // Fire immediately so UI doesn't show 'loading connection'
+    updateLiveUI();
+
+    // Then keep syncing every second
     liveState.syncInterval = setInterval(() => updateLiveUI(), 1000);
 
     // Preload synthesis voices to ensure getBestVoice works when Play is clicked
@@ -1067,9 +1117,6 @@ function setupEventListeners() {
 
     if (elements.liveAudioPlayBtn) {
         elements.liveAudioPlayBtn.addEventListener('click', toggleLiveAudio);
-    }
-    if (elements.liveAudioSyncBtn) {
-        elements.liveAudioSyncBtn.addEventListener('click', syncToLive);
     }
 }
 
